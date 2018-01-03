@@ -38,6 +38,7 @@
 source("directories.R")
 library("xtable")
 library("svMisc")
+library("truncnorm") #This is used to prevent negative standard deviation values in the run timing.
 setwd(data_dir)
 
 km_end<-624
@@ -46,8 +47,8 @@ n_hours<-3336
 n_years<-13
 n_fish<-1000
 n_reps<-1000 #1000 reps with the full 24 fisheries array takes about 8 hrs
-offset<-0 #Offset for number of iterations, for when running >1000
-total_reps<-5000 #Total reps after running model multiple times
+offset<-2000 #Offset for number of iterations, for when running >1000
+total_reps<-3000 #Total reps after running model multiple times
 
 fishery_names<-c("Area B CM","Area B PK","Area B SK",
                  "Area D CM","Area D PK","Area D SK",
@@ -131,7 +132,7 @@ rt_sd_sd<-sh_runtiming$rt_sd_sd[sh_runtiming$year==yr]
 
 #cumulative and daily proportions of the run vulnerable to each fishery
 m_vec<-rnorm(n_reps,rt_mean,rt_mean_sd) 
-s_vec<-rnorm(n_reps,rt_sd,rt_sd_sd)
+s_vec<-rtruncnorm(n_reps,a=0,b=Inf,mean=rt_sd,sd=rt_sd_sd)
 
 #passage_date = the date that the fish passes Albion
 passage_date<-(pmax(30,pmin(140,rnorm(fish,m_vec[i-offset],s_vec[i-offset]))))
