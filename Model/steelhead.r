@@ -89,7 +89,7 @@ openings<-as.data.frame(openings)
 
 saveRDS(openings,"Fisheries_with_openings.RData")
 
-sh_runtiming<-as.data.frame(read.csv("steelhead_runtiming.csv", header=T))
+sh_runtiming<-as.data.frame(read.csv("steelhead_runtiming_no_zeros.csv", header=T))
 
 #Set up a fake steelhead population (IBM-like model)
 
