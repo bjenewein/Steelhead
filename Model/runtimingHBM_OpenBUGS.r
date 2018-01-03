@@ -11,9 +11,7 @@ library(coda)
 setwd(data_dir)
 
 #Read in and set up data
-albion_annual<-read.table("steelhead_albion.csv",header=T, sep=",")
-
-years<-seq(1,1+n_col-2)
+albion_annual<-read.table("steelhead_albion_no_zeros.csv",header=T, sep=",")
 
 n_days<-dim(albion_annual)[1]
 n_col<-dim(albion_annual)[2]
@@ -59,10 +57,13 @@ setwd(model_dir)
 
 #Prep inputs to model
 dat<-list(n_days=n_days,n_years=n_years,obs_abund=catch)
-inits<-list(list(mu_rt_m=290,tau_rt_m=1,mu_rt_sd=15,tau_rt_sd=1,tau.c=1),list(mu_rt_m=280,tau_rt_m=1,mu_rt_sd=13,tau_rt_sd=1,tau.c=1),list(mu_rt_m=300,tau_rt_m=1,mu_rt_sd=10,tau_rt_sd=1,tau.c=1))
+inits<-list( #Recall tau=1/sqrt(sigma)
+  list(mu_rt_m=290,tau_rt_m=1,mu_rt_sd=15,tau_rt_sd=1,tau.c=1),       #1st chain
+  list(mu_rt_m=280,tau_rt_m=0.01,mu_rt_sd=10,tau_rt_sd=0.01,tau.c=1), #2nd chain
+  list(mu_rt_m=300,tau_rt_m=0.05,mu_rt_sd=20,tau_rt_sd=0.05,tau.c=1)) #3rd chain
 parameters<-c("rt_m","rt_sd","mu_rt_m","sigma_rt_m","mu_rt_sd","sigma_rt_sd","sigma")
 
-RT_fit<-bugs(data=dat,inits=inits,parameters.to.save=parameters,model.file="runtimingHBM_OpenBUGS.txt",n.chains=3,n.burnin=0,n.iter=80000,debug=F)
+RT_fit<-bugs(data=dat,inits=inits,parameters.to.save=parameters,model.file="runtimingHBM_OpenBUGS.txt",n.chains=3,n.iter=500000,debug=F)
 
 # Make results available so can call individual parameter sims (sims.list)
 attach.bugs(RT_fit)
@@ -71,7 +72,7 @@ caterplot(RT_fit,parms=c("rt_m","mu_rt_m"),reorder=F)
 caterplot(RT_fit,parms=c("rt_sd","mu_rt_sd"),reorder=F)
 
 #----------------Alternate option for getting trace plots into R
-RT_fit<-bugs(data=dat,inits=inits,parameters.to.save=parameters,model.file="runtimingHBM_OpenBUGS.txt",n.chains=3,n.iter=80000,debug=F,codaPkg=T)
+RT_fit<-bugs(data=dat,inits=inits,parameters.to.save=parameters,model.file="runtimingHBM_OpenBUGS.txt",n.chains=3,n.iter=200000,debug=F,codaPkg=T)
 
 ## Produce a CODA object from the lineout output
 line.coda <- read.bugs(RT_fit)
