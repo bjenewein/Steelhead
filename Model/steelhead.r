@@ -21,7 +21,7 @@
 #-----PLOT SET 1: Annual run-timing
 #--------Mean (50% date) plus spread of run
 #--------Mean with SD around mean (not 50% date plus spread of run)
-#--------Estimated mean annual run timing at Albion
+#--------Estimated mean spread at Albion
 #--------Mean vs SD to show no pattern between 50% date and spread of return
 #-----PLOT SET 2: Percentage of run exposed by year and fishery
 #--------Population Percent Exposure to Commercial Fisheries by Year - Barplots
@@ -47,8 +47,8 @@ n_hours<-3336
 n_years<-13
 n_fish<-1000
 n_reps<-1000 #1000 reps with the full 24 fisheries array takes about 8 hrs
-offset<-2000 #Offset for number of iterations, for when running >1000
-total_reps<-3000 #Total reps after running model multiple times
+offset<-1000 #Offset for number of iterations, for when running >1000
+total_reps<-2000 #Total reps after running model multiple times
 
 fishery_names<-c("Area B CM","Area B PK","Area B SK",
                  "Area D CM","Area D PK","Area D SK",
@@ -317,11 +317,11 @@ saveRDS(cml_exposure,paste0("ComEO_cml_exposure_1-",total_reps,".RData"))
 
 total_exposed<-array(as.numeric(NA),dim=c(n_fisheries,n_years,total_reps))
 
-total_exposed<-readRDS("ComEO_tot_exposure_1-5000.RData")
+total_exposed<-readRDS("ComEO_tot_exposure_1-2000.RData")
 
 cml_exposure<-array(as.numeric(NA),dim=c(n_fish,n_years,total_reps))
 
-cml_exposure<-readRDS("ComEO_cml_exposure_1-5000.RData")
+cml_exposure<-readRDS("ComEO_cml_exposure_1-2000.RData")
 
 
 #Convert to average #/% fish exposed by fishery each year
@@ -673,9 +673,8 @@ setwd(plots_dir)
 #-----PLOT SET 1: Annual run-timing
 #####################################
 
-png(file="annual_runtiming.png")
-
 #--------Mean (50% date) plus spread of run
+png(file="annual_mean_and_spread.png")
 
 yr=1995
 y1<-array(as.numeric(NA),dim=c(1,22))
@@ -691,7 +690,19 @@ for(y in 1:22){
   yr=yr+1
 }
 
+par(mar=c(6,5,1,1))
+x<-1:22
+plot(sh_runtiming$rt_mean, main="", xlab="Year",ylab="Day of Year", xaxt="n", yaxt="n", type="l", bty="n", 
+     lty=1, ylim=range(240,340),cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
+axis(1, at=1:22,labels=c("1995","","1997","","1999","","2001","","2003","","2005","","2007","","2009","","2011","","2013","","2015",""), las=2, cex.axis=1.5)
+axis(2, at=c(240,250,260,270,280,290,300,310,320,330,340), labels=c("240","","260","","280","","300","","320","","340"), las=2, cex.axis=1.5)
+arrows(x, y1, x, y2, length=0.05, angle=90, code=3, col="red", lwd=2)
+points(sh_runtiming$rt_mean,cex=2, pch=16)
+
+dev.off()
+
 #--------Mean with SD around mean (not 50% date plus spread of run)
+png(file="annual_runtiming_mean.png")
 
 yr=1995
 y1<-array(as.numeric(NA),dim=c(1,22))
@@ -707,11 +718,10 @@ for(y in 1:22){
   yr=yr+1
 }
 
-#--------Estimated mean annual run timing at Albion
-
 par(mar=c(6,5,1,1))
 x<-1:22
-plot(sh_runtiming$rt_mean, main="", xlab="Year",ylab="Day of Year", xaxt="n", yaxt="n", type="l", bty="n", lty=1, ylim=range(240,340),cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
+plot(sh_runtiming$rt_mean, main="", xlab="Year",ylab="Day of Year", xaxt="n", yaxt="n", type="l", bty="n", 
+     lty=1, ylim=range(240,340),cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
   axis(1, at=1:22,labels=c("1995","","1997","","1999","","2001","","2003","","2005","","2007","","2009","","2011","","2013","","2015",""), las=2, cex.axis=1.5)
   axis(2, at=c(240,250,260,270,280,290,300,310,320,330,340), labels=c("240","","260","","280","","300","","320","","340"), las=2, cex.axis=1.5)
   arrows(x, y1, x, y2, length=0.05, angle=90, code=3, col="red", lwd=2)
@@ -719,10 +729,39 @@ plot(sh_runtiming$rt_mean, main="", xlab="Year",ylab="Day of Year", xaxt="n", ya
 
 dev.off()
 
-png(file="meanvssd_runtiming.png")
+#--------Estimated mean spread at Albion
+png(file="annual_runtiming_spread.png")
+
+yr=1995
+y1<-array(as.numeric(NA),dim=c(1,22))
+for(y in 1:22){
+  y1[y]<-sh_runtiming$rt_sd[sh_runtiming$year==yr]-sh_runtiming$rt_sd_sd[sh_runtiming$year==yr]
+  yr=yr+1
+}
+
+yr=1995
+y2<-array(as.numeric(NA),dim=c(1,22))
+for(y in 1:22){
+  y2[y]<-sh_runtiming$rt_sd[sh_runtiming$year==yr]+sh_runtiming$rt_sd_sd[sh_runtiming$year==yr]
+  yr=yr+1
+}
+
+par(mar=c(6,5,1,1))
+x<-1:22
+plot(sh_runtiming$rt_sd, main="", xlab="Year",ylab="Day of Year", xaxt="n", yaxt="n", type="l", bty="n", 
+     lty=1, ylim=range(3,15),cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
+axis(1, at=1:22,labels=c("1995","","1997","","1999","","2001","","2003","","2005","","2007","","2009","","2011","","2013","","2015",""), las=2, cex.axis=1.5)
+axis(2, at=c(3,4,5,6,7,8,9,10,11,12,13,14,15), labels=c("3","","5","","7","","9","","11","","13","","15"), las=2, cex.axis=1.5)
+arrows(x, y1, x, y2, length=0.05, angle=90, code=3, col="red", lwd=2)
+points(sh_runtiming$rt_sd,cex=2, pch=16)
+
+dev.off()
 
 #-----Mean vs SD to show no pattern between 50% date and spread of return
-plot(sh_runtiming$rt_mean,sh_runtiming$rt_sd, xlab="Mean",ylab="Standard deviation")
+png(file="meanvsspread_runtiming.png")
+
+plot(sh_runtiming$rt_mean,sh_runtiming$rt_sd, xlab="Mean",ylab="Standard deviation",
+     cex.axis=1.5, cex.lab=1.5,cex=1.5, pch=16, bty="l")
 
 dev.off()
 
