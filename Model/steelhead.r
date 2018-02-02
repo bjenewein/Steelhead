@@ -814,21 +814,35 @@ dev.off()
 
 #--------Population Percent Exposure by Fishery - Line plots w Error bars
 
-x<-1:13
+x<-1:n_years
 pdf(file=paste0("Population Percent Exposure by Fishery - Line plots w Error bars.pdf"))
 #par(mfrow=c(1,1),mar=c(3,3,1,1), oma=c(5,5,3,1))
 par(mfrow=c(1,1),mar=c(5.1,4.1,4.1,2.1), oma=c(1,1,1,1))
 
+y1<-array(as.numeric(NA),dim=c(n_fisheries,n_years))
+y2<-array(as.numeric(NA),dim=c(n_fisheries,n_years))
+
+for(y in 1:n_years){
+  
+  for(f in 1:n_fisheries){
+    y1[f,y]<-max(0,mean_perc_exposed[f,y]-sd_perc_exposed[f,y])
+  }
+
+  for(f in 1:n_fisheries){
+    y2[f,y]<-min(100,mean_perc_exposed[f,y]+sd_perc_exposed[f,y])
+  }
+}
+
 for(f in 1:n_fisheries){
   plot(mean_perc_exposed[f,], main=fishery_names[f], xlab="",ylab="% Exposed", xaxt="n", type="l", bty="n", lty=1, ylim=range(0,100))
     axis(1, at=1:13,labels=seq(from=2004,to=2016, by=1), las=2)
-    arrows(x, mean_perc_exposed[f,]-sd_perc_exposed[f,], x, mean_perc_exposed[f,]+sd_perc_exposed[f,], length=0.05, angle=90, code=3, col="red")
+    arrows(x, y1[f,], x, y2[f,], length=0.05, angle=90, code=3, col="red")
     points(mean_perc_exposed[f,],pch=ifelse(openings[f,x]=="TRUE",16,1))
     
-  legend("topright", legend="No openings",pch=1,bty="n")
+  legend("topright",legend="No openings",pch=1,bty="n")
 }
 
-   
+
 #Turning off for now, can turn on if you want to put more than one graph per page
 #mtext(text="Year",side=1,line=1,outer=TRUE)
 #mtext(text="% Exposed",side=2,line=1,outer=TRUE)
