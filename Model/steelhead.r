@@ -720,10 +720,11 @@ for(y in 1:22){
 
 par(mar=c(6,5,1,1))
 x<-1:22
-plot(sh_runtiming$rt_mean, main="", xlab="Year",ylab="Day of Year", xaxt="n", yaxt="n", type="l", bty="n", 
+plot(sh_runtiming$rt_mean, main="", xlab="Year",ylab="", xaxt="n", yaxt="n", type="l", bty="n", 
      lty=1, ylim=range(240,340),cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
   axis(1, at=1:22,labels=c("1995","","1997","","1999","","2001","","2003","","2005","","2007","","2009","","2011","","2013","","2015",""), las=2, cex.axis=1.5)
   axis(2, at=c(240,250,260,270,280,290,300,310,320,330,340), labels=c("240","","260","","280","","300","","320","","340"), las=2, cex.axis=1.5)
+  mtext("Day of Year",side=2,line=3.5,cex=1.5)
   arrows(x, y1, x, y2, length=0.05, angle=90, code=3, col="red", lwd=2)
   points(sh_runtiming$rt_mean,cex=2, pch=16)
 
@@ -752,7 +753,7 @@ plot(sh_runtiming$rt_sd, main="", xlab="Year",ylab="", xaxt="n", yaxt="n", type=
      lty=1, ylim=range(3,15),cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
 axis(1, at=1:22,labels=c("1995","","1997","","1999","","2001","","2003","","2005","","2007","","2009","","2011","","2013","","2015",""), las=2, cex.axis=1.5)
 axis(2, at=c(3,4,5,6,7,8,9,10,11,12,13,14,15), labels=c("3","","5","","7","","9","","11","","13","","15"), las=2, cex.axis=1.5)
-mtext("Day of Year",side=2,line=3,cex=1.5)
+mtext("Number of Days",side=2,line=3,cex=1.5)
 arrows(x, y1, x, y2, length=0.05, angle=90, code=3, col="red", lwd=2)
 points(sh_runtiming$rt_sd,cex=2, pch=16)
 
